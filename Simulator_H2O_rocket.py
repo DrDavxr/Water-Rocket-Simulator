@@ -14,10 +14,10 @@ from scipy.optimize import Bounds
 
 def main(x, *args):
     # Definition of the initial state parameters.
-    P_atm, P_max, D, d, alpha, delta, init_h, init_FP, init_v = args
+    P_atm, P_max, T_init, D, d, alpha, delta, init_h, init_FP, init_v, m_tot = args
     state_vector = [init_h, init_FP, init_v]
-    Trajectory = Time_Integration(state_vector, D, d, x, P_atm, P_max, alpha,
-                                  delta)
+    Trajectory = Time_Integration(state_vector, D, d, x, P_atm, P_max, T_init, alpha,
+                                  delta, m_tot)
     print(Trajectory[0][-1])
     return -Trajectory[0][-1]
 
@@ -30,7 +30,6 @@ R_Earth = 6371000  # Earth Radius [m]
 T_0 = 288.15  # Reference Temperature for ISA [K]
 P_0 = 101325  # Reference pressure for ISA [Pa]
 rho_0 = 1.225  # Reference density for an ISA day [kg/m^3]
-rho_H2O = 998.2  # Density of tap water [kg/m^3]
 
 # Transform the altitude (z) into geopotential altitude (h).
 init_h = (init_z)/(1+init_z/R_Earth)
@@ -43,6 +42,7 @@ rho_amb = rho_0 * Delta**4.2561  # Air density at Leganés for ISA day [kg/m^3]
 
 # Define tank maximum pressure.
 P_max = 2.83e5  # [Pa]
+T_init = 30     # [ºC]
 
 # Define Flight initial parameters.
 alpha = np.radians(2)
@@ -52,7 +52,13 @@ delta = np.radians(0)
 D = 10.2e-2  # Bottle diameter [m]
 d = 8e-3  # Nozzle throat diameter [m]
 
-# %% COMPUTE THE TRAJECTORY OF THE ROCKET.
-args = (P_atm, P_max, D, d, alpha, delta, init_h, init_FP, init_v)
+# Define payload mass
+m_pl = 12e-3
+m_str= 2*46.7e-3
 
-solution = minimize(main, 0.8e-3, args = args)
+m_tot = m_pl + m_str
+
+# %% COMPUTE THE TRAJECTORY OF THE ROCKET.
+args = (P_atm, P_max, T_init, D, d, alpha, delta, init_h, init_FP, init_v, m_tot)
+
+solution = minimize(main, 2e-3, args = args)

@@ -52,15 +52,15 @@ class TankFlow(object):
         """
         init_rho = state_vector
         rho = solve_ivp(DensityDerivative, (0, step), init_rho,
-                         args=(init_rho, v_nozzle, self.d))
+                         args=(init_rho[0], v_nozzle, self.d))
         return rho.y[0][-1]
 
-    def TankPressure(self, v_e):
+    def TankPressure(self, P_max, rho_max, rho):
         """
         Compute the air pressure inside the tank.
         """
 
-        p = self.p_atm + 0.5*self.rho_w*v_e**2*(1 - (self.d/self.D)**4)
+        p = P_max*(rho/rho_max)**self.gamma
 
         return p
 
@@ -70,3 +70,4 @@ class TankFlow(object):
         expansion.
         """
         return V_init - mdot*(step/self.rho_w)
+    
