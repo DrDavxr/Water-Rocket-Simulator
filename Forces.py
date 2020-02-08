@@ -30,7 +30,7 @@ class Forces(object):
         self.rho_air = rho_air
 
     @staticmethod
-    def Exhaust_Velocity(V_H2O, D, P_1, P_amb, g=9.80665, rho_H2O=1000):
+    def Exhaust_Velocity(V_H2O, d, D, P_1, P_amb, g=9.80665, rho_H2O=1000):
         """
         Compute the exhaust velocity for a given instant.
 
@@ -55,7 +55,7 @@ class Forces(object):
             Exhaust speed [m/s^2].
 
         """
-        return np.sqrt(2*(g*((4*V_H2O)/(np.pi*D**2)) + (P_1-P_amb)/rho_H2O))
+        return np.sqrt(2*(g*((4*V_H2O)/(np.pi*D**2)) + (P_1-P_amb)/rho_H2O)/(1-(d/D)**4))
 
     @staticmethod
     def MassFlowRate(v_e, A_e, rho_H2O=1000.0):

@@ -8,51 +8,65 @@ This file contains the Equations of the Tank of the rocket. These will
 be integrated using the Runge-Kutta 4th order method.
 """
 
+
 class TankFlow(object):
-    
-    def __init__(self,state_vector, v_nozzle, D, d, p_atm, rho_w, gamma):
-        self.state_vector = state_vector
-        self.v_nozzle = v_nozzle
+
+    def __init__(self, D, d, p_atm, init_V_H2O, V=2e-3, rho_w=1000, gamma=1.4):
+        """
+        Initialize the Tank class.
+
+        Parameters
+        ----------
+        state_vector : ARRAY
+            Array containing the state parameters.
+        v_nozzle : FLOAT
+            Velocity at the exit of the nozzle [m/s].
+        D : FLOAT
+            Diameter of the bottle [m].
+        d : FLOAT
+            Diameter of the nozzle throat [m].
+        p_atm : FLOAT
+            Atmospheric (ambient) pressure [Pa].
+        rho_w : FLOAT
+            Water density [kg/m^3].
+        gamma : FLOAT
+            Specific heat ratio [-].
+
+        Returns
+        -------
+        None.
+
+        """
         self.D = D
         self.d = d
         self.p_atm = p_atm
         self.rho_w = rho_w
         self.gamma = gamma
-        
+        self.V = V
+        self.V_0 = V - init_V_H2O  # Initial volume of air [m^3]
 
+    def DensityComputation(self, state_vector, v_nozzle, step):
+        """
+        Compute the density of the air inside the tank given initial
+        conditions and the time step of integration.
+        """
+        init_rho = state_vector
+        rho = solve_ivp(DensityDerivative, (0, step), init_rho,
+                         args=(init_rho, v_nozzle, self.d))
+        return rho.y[0][-1]
 
-    
-    """Define the Equations of evolution of air inside the tank,
-    assuming adiabatic expansion.
+    def TankPressure(self, v_e):
+        """
+        Compute the air pressure inside the tank.
+        """
 
-    Parameters
-    ----------
-    state_vector : ARRAY
-        1xN Array containing the state parameters.
-    rho_air: FLOAT
-        Density of air [kg/m3].
-    v_nozzle : FLOAT
-        Velocity of water at the nozzle [m/s].
-    d : FLOAT
-        Diameter of throat [m].
+        p = self.p_atm + 0.5*self.rho_w*v_e**2*(1 - (self.d/self.D)**4)
 
-    Returns
-    -------
-    ARRAY
-        1xN Array containing the definitions of the Equations of Motion.
-        
-    """
-
-    def DensityComp(self,step):
-        rho = self.state_vector
-        rho2 = solve_ivp(DensityDerivative,(0,step),rho,args=(rho,self.v_nozzle,self.d))
-        return rho2
-    
-    def PresTank(self):
-        
-        p = self.p_atm + 0.5*self.rho_w*self.v_nozzle**2*(1 - (self.d/self.D)**4)
-        
         return p
-    
-        
-        
+
+    def WaterVolume(self, V_init, mdot, step):
+        """
+        Compute the volume of water inside the tank based on an adiabatic
+        expansion.
+        """
+        return V_init - mdot*(step/self.rho_w)
