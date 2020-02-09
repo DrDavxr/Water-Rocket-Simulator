@@ -11,7 +11,8 @@ be integrated using the Runge-Kutta 4th order method.
 
 class TankFlow(object):
 
-    def __init__(self, D, d, p_atm, init_V_H2O, V=2e-3, rho_w=1000, gamma=1.4):
+    def __init__(self, D, d, p_atm, init_V_H2O, init_rho_air, V=2e-3,
+                 rho_w=1000, gamma=1.4):
         """
         Initialize the Tank class.
 
@@ -35,9 +36,11 @@ class TankFlow(object):
         self.d = d
         self.p_atm = p_atm
         self.rho_w = rho_w
+        self.init_rho_air = init_rho_air
         self.gamma = gamma
         self.V = V
         self.V_0 = V - init_V_H2O  # Initial volume of air [m^3]
+        self.m_0 = self.init_rho_air*self.V_0
 
     def DensityComputation(self, rho_vect, v_nozzle, step):
         """
@@ -45,7 +48,7 @@ class TankFlow(object):
         conditions and the time step of integration.
         """
         rho = solve_ivp(DensityDerivative, (0, step), rho_vect,
-                        args=(rho_vect[0], v_nozzle, self.d, self.D))
+                        args=(rho_vect[0], v_nozzle, self.d, self.D, self.m_0))
         return rho.y[0][-1]
 
     def TankPressure(self, P_max, rho_max, rho):

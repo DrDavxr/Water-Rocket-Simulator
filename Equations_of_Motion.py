@@ -37,8 +37,8 @@ def Dynamics(state_vector, T, Drag, Lift, m, alpha, delta, g=9.80665):
 
     """
     h = state_vector[0]  # [m]
-    v = state_vector[1]  # [radians]
-    FP = state_vector[2]  # [m/s]
+    FP = state_vector[1]  # [radians]
+    v = state_vector[2]  # [m/s]
 
     def Altitude_Derivative(t, y):
         """

@@ -60,7 +60,8 @@ def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
     sol = np.array([])
 
     # Define the Tank object.
-    Tank = TankFlow(D, d, P_atm, init_V_H2O)
+    rho_air = P_max/(287*(T_init + 273))  # Initial air density
+    Tank = TankFlow(D, d, P_atm, init_V_H2O, rho_air)
 
     while not stop:
 
@@ -73,7 +74,6 @@ def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
             m_dot = Forces.MassFlowRate(v_e, A_e)
             T = Forces.Thrust(m_dot, v_e)
             Drag, Lift = Forces.Aerodynamic_Forces(S_ref, alpha, v)
-            rho_air = P_max/(287*(T_init + 273))
 
             # Preallocate.
             T_sol = np.array([])
@@ -101,25 +101,27 @@ def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
 
             # Redefine the water volume.
             V_H2O = Tank.WaterVolume(V_H2O_sol[-1], m_dot, step)
-            if V_H2O <= 0:
-                stop = True
-                break
-            else:
-                pass
 
             # Redefine the Pressure of the air inside the tank.
             rho_air = Tank.DensityComputation([rho_air_sol[-1]], v_e, step)
             P_1 = Tank.TankPressure(P_max, P_max/287/(T_init + 273), rho_air)
 
+            if V_H2O <= 0 or P_1 < P_atm:
+                break
+            else:
+                pass
+
             v_e = Forces.Exhaust_Velocity(V_H2O, d, D, P_1, P_atm)
             m_dot = Forces.MassFlowRate(v_e, A_e)
-            print(m_dot)
 
             # Calculate the remaining mass:
             m -= m_dot*step
 
             # Recalculate the aerodynamic forces:
             Drag, Lift = Forces.Aerodynamic_Forces(S_ref, alpha, v)
+
+            # Redefine the thrust.
+            T = Forces.Thrust(m_dot, v_e)
 
             state_vector = np.array([h, FP, v])
 
@@ -137,8 +139,8 @@ def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
 
         # Retrieve the obtained solutions.
         h_sol = np.append(h_sol, sol[0])
-        v_sol = np.append(v_sol, sol[2])
         FP_sol = np.append(FP_sol, sol[1])
+        v_sol = np.append(v_sol, sol[2])
         rho_air_sol = np.append(rho_air_sol, rho_air)
         V_H2O_sol = np.append(V_H2O_sol, V_H2O)
         T_sol = np.append(T_sol, T)
