@@ -63,12 +63,9 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         rho_air = WE.DensityComputation(rho_air, v_nozzle, step, d, m_air)
         state_vector[3] = m_air / rho_air
         state_vector[4] = WE.TankPressure(P_air[-1], V, x, V_H2O)
-        print(state_vector[0])
-        print(state_vector[4])
 
         V_H2O = V - state_vector[3]
         m_tot -= m_dot*step
-        
 
         if V_H2O >= 0:
             h = np.append(h, state_vector[0])
@@ -97,8 +94,6 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         state_vector[3] = V
         state_vector[4] = AE.TankPressComp(P_amb, A_e, v_n, V, state_vector[4],
                                            step)
-        print(state_vector[0])
-        print(state_vector[4])
         if P_air[-1] >= P_amb:
             h = np.append(h, state_vector[0])
             v = np.append(v, state_vector[1])
