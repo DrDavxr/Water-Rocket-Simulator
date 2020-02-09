@@ -9,35 +9,33 @@ be integrated using the Runge-Kutta 4th order method.
 """
 
 
-def Altitude_Derivative(t, y, state_vector):
+def Altitude_Derivative(t, y, v, FP):
     """
     Function computing the altitude derivative.
     """
-    v = state_vector[1]
-    FP = state_vector[2]
     dhdt = v*np.sin(FP)
     return dhdt
 
 
 def Altitude_Computation(state_vector, step):
     Altitude = solve_ivp(Altitude_Derivative, (0, step), [state_vector[0]],
-                         args=state_vector)
-    return Altitude
+                         args=(state_vector[1], state_vector[2]))
+    return Altitude.y[0][-1]
 
 
-def Velocity_Derivative(t, y, state_vector, T, m, alpha, delta, Drag, g):
+def Velocity_Derivative(t, y, FP, T, m, alpha, delta, Drag, g):
     """
     Function computing the Velocity Derivative.
     """
-    FP = state_vector[2]
     dvdt = (T/m)*np.cos(alpha+delta) - Drag/m - g*np.sin(FP)
     return dvdt
 
 
 def Velocity_Computation(state_vector, step, T, m, alpha, delta, Drag, g):
+    FP = state_vector[2]
     Velocity = solve_ivp(Velocity_Derivative, (0, step), [state_vector[1]],
-                         args=(state_vector, T, m, alpha, delta, Drag, g))
-    return Velocity
+                         args=(FP, T, m, alpha, delta, Drag, g))
+    return Velocity.y[0][-1]
 
 
 def FP_Derivative(t, y):
@@ -50,4 +48,4 @@ def FP_Derivative(t, y):
 
 def FP_Computation(state_vector, step):
     FP = solve_ivp(FP_Derivative, (0, step), [state_vector[2]])
-    return FP
+    return FP.y[0][-1]

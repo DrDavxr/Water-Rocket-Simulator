@@ -8,7 +8,7 @@ simulation of the trajectory.
 import numpy as np
 
 
-class Forces(object):
+class Water_Forces(object):
 
     def __init__(self, rho_H2O, rho_air):
         """

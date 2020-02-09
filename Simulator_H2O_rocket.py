@@ -4,11 +4,7 @@ Trajectory simulator of the H2O rocket for the Course on Rocket Motors.
 
 # Import the libraries.
 import numpy as np
-<<<<<<< Updated upstream
-from Integration import Time_Integration
-=======
 from Integration import Simulation
->>>>>>> Stashed changes
 from scipy.optimize import minimize_scalar
 
 
@@ -17,15 +13,13 @@ from scipy.optimize import minimize_scalar
 
 def main(x, *args):
     # Definition of the initial state parameters.
-    P_atm, P_max, T_init, D, d, alpha, delta, init_h, init_FP, init_v, m_tot = args
-    state_vector = [init_h, init_FP, init_v]
-<<<<<<< Updated upstream
-    Trajectory = Time_Integration(state_vector, D, d, x, P_atm, P_max, T_init,
-                                  alpha, delta, m_tot)
-=======
+    init_h, init_v, init_FP, V, init_P_air, step, alpha, delta, g, D, d, m_wo_H2O, P_amb, T_init = args
+    init_V_air = V - x
+    state_vector = [init_h, init_v, init_FP, init_V_air, init_P_air]
+    m_tot = x * 1000 + m_wo_H2O
     Trajectory = Simulation(x, state_vector, step, alpha, delta, g, D, d,
-                            m_tot, P_amb, P_1, T_init)
->>>>>>> Stashed changes
+                            m_tot, P_amb, init_P_air, T_init)
+    print(Trajectory[1])
     return -Trajectory[0][-1]
 
 
@@ -63,7 +57,7 @@ d = 8e-3  # Nozzle throat diameter [m]
 m_pl = 12e-3  # Payload mass [kg]
 m_str = 2*46.7e-3  # Structural mass [kg]
 
-m_tot = m_pl + m_str
+m_wo_H2O = m_pl + m_str  # Initial mass of the rocket without water.
 
 # Redefine the initial altitude w.r.t the ground.
 init_h_g = 0  # [m]
@@ -71,17 +65,23 @@ init_h_g = 0  # [m]
 # Define the maximum volume of the bottle.
 V = 2e-3
 
+# Define the gravity.
+g = 9.80655  # [m/s^2]
+
+# Define the step of integration.
+step = 0.1
+
 # %% COMPUTE THE TRAJECTORY OF THE ROCKET.
-args = (P_atm, P_max, T_init, D, d, alpha, delta, init_h_g, init_FP, init_v,
-        m_tot)
+args = (init_h_g, init_v, init_FP, V, P_max, step, alpha, delta, g,
+        D, d, m_wo_H2O, P_atm, T_init)
 
 # Obtain the optimized value of the initial volume.
 solution = minimize_scalar(main, args=args, method='bounded',
                            bounds=(1.1e-3, V))
 
 # Obtain altitude corresponding to the optimized value of the initial volume.
-Altitude = main(solution.x, P_atm, P_max, T_init, D, d, alpha, delta, init_h_g,
-                init_FP, init_v, m_tot)
+Altitude = main(solution.x, init_h, init_v, init_FP, V, P_max, step, alpha,
+                delta, g, D, d, m_wo_H2O, P_atm, T_init)
 
 Altitude = Altitude * (-1)
 print(f'Maximum Altitude: {Altitude} m.\nV_H2O = {solution.x*1e3} L')
