@@ -23,7 +23,7 @@ def main(x, *args):
 
 
 # %% INTRODUCE THE INITIAL VALUES OF THE STATE PARAMETERS.
-init_v = 0.01  # Initial velocity [m/s].
+init_v = 1  # Initial velocity [m/s].
 init_FP = np.radians(45)
 init_z = 665  # Initial Altitude (Leganés) w.r.t SL [m]
 R_Earth = 6371000  # Earth Radius [m]
@@ -79,7 +79,7 @@ solution = minimize_scalar(main, args=args, method='bounded',
                            bounds=(0.5e-3, V))
 
 # Obtain altitude corresponding to the optimized value of the initial volume.
-Altitude = main(solution.x, init_h_g, init_v, init_FP, V, P_max, step, alpha,
+Altitude = main(0.8e-3, init_h_g, init_v, init_FP, V, P_max, step, alpha,
                 delta, g, D, d, m_wo_H2O, P_atm, T_init)
 
 Altitude = Altitude * (-1)
