@@ -32,10 +32,10 @@ P_0 = 101325  # Reference pressure for ISA [Pa]
 rho_0 = 1.225  # Reference density for an ISA day [kg/m^3]
 
 # Transform the altitude (z) into geopotential altitude (h).
-init_h = (init_z)/(1+init_z/R_Earth)
+init_h_ISA = (init_z)/(1+init_z/R_Earth)
 
 # Compute the ISA temperature and pressure at Leganés.
-Delta = 1 - 2.25569*1e-5*init_h  # Non-dimensional temperature ratio T/T_0
+Delta = 1 - 2.25569*1e-5*init_h_ISA  # Non-dimensional temperature ratio T/T_0
 T_amb = T_0 * Delta  # Temperature at Leganés for an ISA day [K]
 P_atm = P_0 * Delta**5.2561  # Pressure at Leganés for an ISA day [Pa]
 rho_amb = rho_0 * Delta**4.2561  # Air density at Leganés for ISA day [kg/m^3]
@@ -79,7 +79,7 @@ solution = minimize_scalar(main, args=args, method='bounded',
                            bounds=(0.5e-3, V))
 
 # Obtain altitude corresponding to the optimized value of the initial volume.
-Altitude = main(solution.x, init_h, init_v, init_FP, V, P_max, step, alpha,
+Altitude = main(solution.x, init_h_g, init_v, init_FP, V, P_max, step, alpha,
                 delta, g, D, d, m_wo_H2O, P_atm, T_init)
 
 Altitude = Altitude * (-1)
