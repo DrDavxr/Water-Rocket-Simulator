@@ -3,7 +3,7 @@ Integration module.
 """
 # Import the modules.
 import numpy as np
-import Water_Forces
+from Water_Forces import Water_Forces
 import Equations_of_Motion as EOM
 import Water_Equations as WE
 import Air_Equations as AE
@@ -50,13 +50,15 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         v_nozzle = Water_Forces.Exhaust_Velocity(V_H2O, d, D, P_air[-1], P_amb)
         m_dot = Water_Forces.MassFlowRate(v_nozzle, A_e)
         T = Water_Forces.Thrust(m_dot, v_nozzle)
-        Drag = Water_Forces.Aerodynamic_Forces(S_ref, alpha, state_vector[1])
+        Drag, _ = Water_Forces.Aerodynamic_Forces(S_ref, alpha,
+                                                  state_vector[1])
 
         # Update the state vector.
         state_vector[0] = EOM.Altitude_Computation(state_vector, step)
-        state_vector[1] = EOM.FP_Computation(state_vector, step, T, m_tot,
-                                             alpha, delta, Drag, g)
-        state_vector[2] = EOM.Velocity_Computation(state_vector, step)
+        state_vector[1] = EOM.FP_Computation(state_vector, step)
+        state_vector[2] = EOM.Velocity_Computation(state_vector, step, T,
+                                                   m_tot, alpha, delta, Drag,
+                                                   g)
         state_vector[3] = m_air / WE.DensityComputation(state_vector[3],
                                                         v_nozzle, step, d,
                                                         m_air)
@@ -80,12 +82,14 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         rho_air = AE.TankDensComp(rho_air, v_n, A_e, V, step)
         T = rho_air*v_n**2*A_e
         m_air = rho_air*V
-        Drag = Water_Forces.Aerodynamic_Forces(S_ref, alpha, state_vector[1])
+        Drag, _ = Water_Forces.Aerodynamic_Forces(S_ref, alpha,
+                                                  state_vector[1])
         # Update the state vector.
         state_vector[0] = EOM.Altitude_Computation(state_vector, step)
-        state_vector[1] = EOM.FP_Computation(state_vector, step, T, m_tot,
-                                             alpha, delta, Drag, g)
-        state_vector[2] = EOM.Velocity_Computation(state_vector, step)
+        state_vector[1] = EOM.FP_Computation(state_vector, step)
+        state_vector[2] = EOM.Velocity_Computation(state_vector, step, T,
+                                                   m_tot, alpha, delta, Drag,
+                                                   g)
         state_vector[3] = V
         state_vector[4] = AE.TankPressComp(P_amb, A_e, v_n, V, state_vector[4],
                                            step)

@@ -19,7 +19,6 @@ def main(x, *args):
     m_tot = x * 1000 + m_wo_H2O
     Trajectory = Simulation(x, state_vector, step, alpha, delta, g, D, d,
                             m_tot, P_amb, init_P_air, T_init)
-    print(Trajectory[1])
     return -Trajectory[0][-1]
 
 
