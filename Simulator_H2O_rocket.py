@@ -6,6 +6,7 @@ Trajectory simulator of the H2O rocket for the Course on Rocket Motors.
 import numpy as np
 from Integration import Simulation
 from scipy.optimize import minimize_scalar
+import matplotlib.pyplot as plt
 
 
 # %% SOLVE FOR THE TRAJECTORY OF THE ROCKET.
@@ -54,7 +55,7 @@ d = 8e-3  # Nozzle throat diameter [m]
 
 # Define payload and structural mass.
 m_pl = 12e-3  # Payload mass [kg]
-m_str = 2*46.7e-3  # Structural mass [kg]
+m_str = 1.5*46.7e-3  # Structural mass [kg]
 
 m_wo_H2O = m_pl + m_str  # Initial mass of the rocket without water.
 
@@ -79,8 +80,23 @@ solution = minimize_scalar(main, args=args, method='bounded',
                            bounds=(0.5e-3, V))
 
 # Obtain altitude corresponding to the optimized value of the initial volume.
-Altitude = main(0.8e-3, init_h_g, init_v, init_FP, V, P_max, step, alpha,
-                delta, g, D, d, m_wo_H2O, P_atm, T_init)
+#Altitude = main(solution.x, init_h_g, init_v, init_FP, V, P_max, step, alpha,
+#                delta, g, D, d, m_wo_H2O, P_atm, T_init)
 
-Altitude = Altitude * (-1)
-print(f'Maximum Altitude: {Altitude} m.\nV_H2O = {solution.x*1e3} L')
+state_vector = [init_h_g, init_v, init_FP, V - solution.x, P_max]
+Trajectory = Simulation(solution.x, state_vector, step, alpha, delta, g, D, d,
+                        solution.x * 1000 + m_wo_H2O, P_atm, P_max, T_init)
+
+print(f'Maximum Altitude: {Trajectory[0][-1]} m.\nV_H2O = {solution.x*1e3} L')
+
+t_vec = np.linspace(0,Trajectory[-1],len(Trajectory[0]))
+mpl = plt.figure()
+plt.plot(t_vec,Trajectory[0])
+plt.title('Altitude')
+mpl = plt.figure()
+plt.plot(t_vec,Trajectory[1])
+plt.plot('Speed')
+mpl = plt.figure()
+plt.plot(t_vec,Trajectory[4])
+plt.plot('Pressure')
+

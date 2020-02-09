@@ -26,6 +26,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
     FP = np.array([])
     V_air = np.array([])
     P_air = np.array([])
+    t = 0
 
     # Define the initial volume of water (first guess).
     V_H2O = x
@@ -61,11 +62,13 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         state_vector[2] = EOM.FP_Computation(state_vector, step)
         rho_air = WE.DensityComputation(rho_air, v_nozzle, step, d, m_air)
         state_vector[3] = m_air / rho_air
-        state_vector[4] = WE.TankPressure(P_1, V, x, V_H2O)
+        state_vector[4] = WE.TankPressure(P_air[-1], V, x, V_H2O)
+        print(state_vector[0])
         print(state_vector[4])
 
         V_H2O = V - state_vector[3]
         m_tot -= m_dot*step
+        
 
         if V_H2O >= 0:
             h = np.append(h, state_vector[0])
@@ -73,6 +76,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             FP = np.append(FP, state_vector[2])
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
+            t += step
 
     # %% SECOND STAGE: PROPULSIVE PHASE (AIR THRUST).
     while P_air[-1] >= P_amb:
@@ -93,6 +97,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         state_vector[3] = V
         state_vector[4] = AE.TankPressComp(P_amb, A_e, v_n, V, state_vector[4],
                                            step)
+        print(state_vector[0])
         print(state_vector[4])
         if P_air[-1] >= P_amb:
             h = np.append(h, state_vector[0])
@@ -100,6 +105,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             FP = np.append(FP, state_vector[2])
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
+            t += step
 
     # %% THIRD STAGE: NO THRUST.
 
@@ -125,4 +131,5 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             FP = np.append(FP, state_vector[2])
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
-    return [h, v, FP, V_air, P_air]
+            t += step
+    return [h, v, FP, V_air, P_air,t]
