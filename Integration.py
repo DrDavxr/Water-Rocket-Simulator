@@ -96,17 +96,15 @@ def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
             # Redefine the Flight Path Angle:
             FP = FP_sol[-1]
 
-            # Redefine density air in tank:
-            rho_air = rho_air_sol[-1]
-
             # Redefine the water volume.
             V_H2O = Tank.WaterVolume(V_H2O_sol[-1], m_dot, step)
 
             # Redefine the Pressure of the air inside the tank.
             rho_air = Tank.DensityComputation([rho_air_sol[-1]], v_e, step)
             P_1 = Tank.TankPressure(P_max, P_max/287/(T_init + 273), rho_air)
+            print(P_1)
 
-            if V_H2O <= 0 or P_1 < P_atm:
+            if V_H2O <= 0:
                 break
             else:
                 pass

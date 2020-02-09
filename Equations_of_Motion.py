@@ -51,8 +51,8 @@ def Dynamics(state_vector, T, Drag, Lift, m, alpha, delta, g=9.80665):
         """
         Function computing the Flight Path Angle Derivative.
         """
-        dFPdt = (T/(m*v)) * np.sin(alpha+delta) + Lift/(m*v) - g*np.cos(FP)
-        return dFPdt
+        # dFPdt = (T/(m*v)) * np.sin(alpha+delta) + Lift/(m*v) - g*np.cos(FP)
+        return 0
 
     def Velocity_Derivative(t, y):
         """

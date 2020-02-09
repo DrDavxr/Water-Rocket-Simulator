@@ -22,7 +22,7 @@ def main(x, *args):
 
 # %% INTRODUCE THE INITIAL VALUES OF THE STATE PARAMETERS.
 init_v = 0.01  # Initial velocity [m/s].
-init_FP = np.radians(90)
+init_FP = np.radians(45)
 init_z = 665  # Initial Altitude (Leganés) w.r.t SL [m]
 R_Earth = 6371000  # Earth Radius [m]
 T_0 = 288.15  # Reference Temperature for ISA [K]
@@ -43,7 +43,7 @@ P_max = 2.83e5  # [Pa]
 T_init = 30     # [ºC]
 
 # Define Flight initial parameters.
-alpha = np.radians(0)
+alpha = np.radians(1)
 delta = np.radians(1)
 
 # Define Geometry Characteristics.
@@ -75,4 +75,4 @@ Altitude = main(solution.x, P_atm, P_max, T_init, D, d, alpha, delta, init_h_g,
                 init_FP, init_v, m_tot)
 
 Altitude = Altitude * (-1)
-print(f'Maximum Altitude ({Altitude} m) with V = {solution.x*1e3} L')
+print(f'Maximum Altitude: {Altitude} m.\nV_H2O = {solution.x*1e3} L')
