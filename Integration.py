@@ -6,7 +6,7 @@ from Forces import Forces
 from Equations_of_Tank import TankFlow
 
 
-def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
+def Water_Simulation(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
                      alpha, delta, m_tot, step=0.1):
     """
 
@@ -57,6 +57,7 @@ def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
     FP_sol = np.array([state_vector[1]])
     v_sol = np.array([state_vector[2]])
     m_sol = np.array(m_0)
+    P_1_sol = np.array([P_max])
     sol = np.array([])
 
     # Define the Tank object.
@@ -102,7 +103,6 @@ def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
             # Redefine the Pressure of the air inside the tank.
             rho_air = Tank.DensityComputation([rho_air_sol[-1]], v_e, step)
             P_1 = Tank.TankPressure(P_max, P_max/287/(T_init + 273), rho_air)
-            print(P_1)
 
             if V_H2O <= 0:
                 break
@@ -145,8 +145,30 @@ def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
         Drag_sol = np.append(Drag_sol, Drag)
         Lift_sol = np.append(Lift_sol, Lift)
         m_sol = np.append(m_sol, m)
+        P_1_sol = np.append(P_1_sol, P_1)
         return_list = [h_sol, v_sol, FP_sol, V_H2O_sol, T_sol, Drag_sol,
-                       Lift_sol, m_sol]
+                       Lift_sol, m_sol, P_1_sol]
 
         seconds += step
     return return_list
+
+
+def AirSimulation(params_list, step=0.1):
+
+    # Unpack the given list:
+    h_sol = params_list[0]
+    v_sol = params_list[1]
+    FP_sol = params_list[2]
+    m_sol = params_list[7]
+    P_1_sol = params_list[8]
+
+    # Definition of constants.
+    V_H2O = 0  # No water is left during this stage.
+    seconds = 0
+    stop = False
+
+    while not stop:
+        v = v_sol[-1]
+        FP = FP_sol[-1]
+
+

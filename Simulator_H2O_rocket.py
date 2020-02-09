@@ -4,7 +4,7 @@ Trajectory simulator of the H2O rocket for the Course on Rocket Motors.
 
 # Import the libraries.
 import numpy as np
-from Integration import Time_Integration
+from Integration import Water_Simulation
 from scipy.optimize import minimize_scalar
 
 
@@ -15,7 +15,7 @@ def main(x, *args):
     # Definition of the initial state parameters.
     P_atm, P_max, T_init, D, d, alpha, delta, init_h, init_FP, init_v, m_tot = args
     state_vector = [init_h, init_FP, init_v]
-    Trajectory = Time_Integration(state_vector, D, d, x, P_atm, P_max, T_init,
+    Trajectory = Water_Simulation(state_vector, D, d, x, P_atm, P_max, T_init,
                                   alpha, delta, m_tot)
     return -Trajectory[0][-1]
 
