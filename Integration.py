@@ -100,4 +100,30 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
 
-    return [h, v, FP, V_air, P_air]
+
+    
+    # %% THIRD STAGE: NO THRUST.
+    
+    T = 0
+        
+    while state_vector[2] >= 0:
+
+        # Compute the inputs.
+        Drag = Water_Forces.Aerodynamic_Forces(S_ref, alpha, state_vector[1])
+        
+        # Update the state vector.
+        state_vector[0] = EOM.Altitude_Computation(state_vector, step)
+        state_vector[1] = EOM.FP_Computation(state_vector, step, T, m_tot,
+                                             alpha, delta, Drag, g)
+        state_vector[2] = EOM.Velocity_Computation(state_vector, step)
+        state_vector[3] = V
+        state_vector[4] = P_amb
+        
+        if state_vector[2] >= 0:
+            h = np.append(h, state_vector[0])
+            v = np.append(v, state_vector[1])
+            FP = np.append(FP, state_vector[2])
+            V_air = np.append(V_air, state_vector[3])
+            P_air = np.append(P_air, state_vector[4])
+
+
