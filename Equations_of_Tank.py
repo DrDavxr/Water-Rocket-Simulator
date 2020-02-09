@@ -17,20 +17,14 @@ class TankFlow(object):
 
         Parameters
         ----------
-        state_vector : ARRAY
-            Array containing the state parameters.
-        v_nozzle : FLOAT
-            Velocity at the exit of the nozzle [m/s].
         D : FLOAT
             Diameter of the bottle [m].
         d : FLOAT
             Diameter of the nozzle throat [m].
         p_atm : FLOAT
             Atmospheric (ambient) pressure [Pa].
-        rho_w : FLOAT
-            Water density [kg/m^3].
-        gamma : FLOAT
-            Specific heat ratio [-].
+        init_V_H2O : FLOAT
+            Initial volume of water [m^3]
 
         Returns
         -------
@@ -45,21 +39,19 @@ class TankFlow(object):
         self.V = V
         self.V_0 = V - init_V_H2O  # Initial volume of air [m^3]
 
-    def DensityComputation(self, state_vector, v_nozzle, step):
+    def DensityComputation(self, rho_vect, v_nozzle, step):
         """
         Compute the density of the air inside the tank given initial
         conditions and the time step of integration.
         """
-        init_rho = state_vector
-        rho = solve_ivp(DensityDerivative, (0, step), init_rho,
-                         args=(init_rho[0], v_nozzle, self.d))
+        rho = solve_ivp(DensityDerivative, (0, step), rho_vect,
+                        args=(rho_vect[0], v_nozzle, self.d, self.D))
         return rho.y[0][-1]
 
     def TankPressure(self, P_max, rho_max, rho):
         """
         Compute the air pressure inside the tank.
         """
-
         p = P_max*(rho/rho_max)**self.gamma
 
         return p
@@ -70,4 +62,3 @@ class TankFlow(object):
         expansion.
         """
         return V_init - mdot*(step/self.rho_w)
-    

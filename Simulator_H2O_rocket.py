@@ -6,7 +6,6 @@ Trajectory simulator of the H2O rocket for the Course on Rocket Motors.
 import numpy as np
 from Integration import Time_Integration
 from scipy.optimize import minimize
-from scipy.optimize import Bounds
 
 
 # %% SOLVE FOR THE TRAJECTORY OF THE ROCKET.
@@ -16,8 +15,8 @@ def main(x, *args):
     # Definition of the initial state parameters.
     P_atm, P_max, T_init, D, d, alpha, delta, init_h, init_FP, init_v, m_tot = args
     state_vector = [init_h, init_FP, init_v]
-    Trajectory = Time_Integration(state_vector, D, d, x, P_atm, P_max, T_init, alpha,
-                                  delta, m_tot)
+    Trajectory = Time_Integration(state_vector, D, d, x, P_atm, P_max, T_init,
+                                  alpha, delta, m_tot)
     print(Trajectory[0][-1])
     return -Trajectory[0][-1]
 
@@ -45,20 +44,24 @@ P_max = 2.83e5  # [Pa]
 T_init = 30     # [ºC]
 
 # Define Flight initial parameters.
-alpha = np.radians(2)
+alpha = np.radians(0)
 delta = np.radians(0)
 
 # Define Geometry Characteristics.
 D = 10.2e-2  # Bottle diameter [m]
 d = 8e-3  # Nozzle throat diameter [m]
 
-# Define payload mass
-m_pl = 12e-3
-m_str= 2*46.7e-3
+# Define payload and structural mass.
+m_pl = 12e-3  # Payload mass [kg]
+m_str = 1.5*46.7e-3  # Structural mass [kg]
 
 m_tot = m_pl + m_str
 
-# %% COMPUTE THE TRAJECTORY OF THE ROCKET.
-args = (P_atm, P_max, T_init, D, d, alpha, delta, init_h, init_FP, init_v, m_tot)
+# Redefine the initial altitude w.r.t the ground.
+init_h_g = 0  # [m]
 
-solution = minimize(main, 2e-3, args = args)
+# %% COMPUTE THE TRAJECTORY OF THE ROCKET.
+args = (P_atm, P_max, T_init, D, d, alpha, delta, init_h_g, init_FP, init_v,
+        m_tot)
+
+solution = minimize(main, 1e-3, args=args)

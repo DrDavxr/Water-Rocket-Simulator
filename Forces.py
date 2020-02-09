@@ -55,6 +55,7 @@ class Forces(object):
             Exhaust speed [m/s^2].
 
         """
+        print(P_1)
         return np.sqrt(2*(g*((4*V_H2O)/(np.pi*D**2)) + (P_1-P_amb)/rho_H2O)/(1-(d/D)**4))
 
     @staticmethod
