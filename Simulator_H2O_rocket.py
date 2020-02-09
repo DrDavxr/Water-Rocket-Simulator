@@ -77,7 +77,7 @@ args = (init_h_g, init_v, init_FP, V, P_max, step, alpha, delta, g,
 
 # Obtain the optimized value of the initial volume.
 solution = minimize_scalar(main, args=args, method='bounded',
-                           bounds=(1.1e-3, V))
+                           bounds=(0.5e-3, V))
 
 # Obtain altitude corresponding to the optimized value of the initial volume.
 Altitude = main(solution.x, init_h, init_v, init_FP, V, P_max, step, alpha,

@@ -9,13 +9,8 @@ import Water_Equations as WE
 import Air_Equations as AE
 
 
-<<<<<<< Updated upstream
-def Time_Integration(state_vector, D, d, init_V_H2O, P_atm, P_max, T_init,
-                     alpha, delta, m_tot, step=0.1):
-=======
 def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
                T_init, V=2e-3):
->>>>>>> Stashed changes
     """
     Structure of the state vector:
         h = state_vector[0]
@@ -76,38 +71,29 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             FP = np.append(FP, state_vector[2])
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
-    return [h, v, FP, V_air, P_air]
 
+    # %% SECOND STAGE: PROPULSIVE PHASE (AIR THRUST).
+    while P_air[-1] >= P_amb:
 
-
-
-     %% SECOND STAGE: PROPULSIVE PHASE (AIR THRUST).
-     
-     
-     while P_air[-1] >= P_amb:
-
-         # Compute the inputs.
-        v_n = AE.VnozzleComp(p, P_amb, m_air/V)
-        rho = AE.TankDensComp(rho, v_n, A_e, V, step)
-        T = rho*v_n**2*A_e
-        m_air = rho*V
+        # Compute the inputs.
+        v_n = AE.VnozzleComp(state_vector[4], P_amb, m_air/V)
+        rho_air = AE.TankDensComp(rho_air, v_n, A_e, V, step)
+        T = rho_air*v_n**2*A_e
+        m_air = rho_air*V
         Drag = Water_Forces.Aerodynamic_Forces(S_ref, alpha, state_vector[1])
-         
-         # Update the state vector.
+        # Update the state vector.
         state_vector[0] = EOM.Altitude_Computation(state_vector, step)
         state_vector[1] = EOM.FP_Computation(state_vector, step, T, m_tot,
                                              alpha, delta, Drag, g)
         state_vector[2] = EOM.Velocity_Computation(state_vector, step)
         state_vector[3] = V
-        state_vector[4] = AE.TankPressComp(P_amb, A_e, v_n, V, state_vector[4], step)
+        state_vector[4] = AE.TankPressComp(P_amb, A_e, v_n, V, state_vector[4],
+                                           step)
+        if P_air[-1] >= P_amb:
+            h = np.append(h, state_vector[0])
+            v = np.append(v, state_vector[1])
+            FP = np.append(FP, state_vector[2])
+            V_air = np.append(V_air, state_vector[3])
+            P_air = np.append(P_air, state_vector[4])
 
-
-         if P_air[-1] >= P_amb:
-             h = np.append(h, state_vector[0])
-             v = np.append(v, state_vector[1])
-             FP = np.append(FP, state_vector[2])
-             V_air = np.append(V_air, state_vector[3])
-             P_air = np.append(P_air, state_vector[4])
-            
     return [h, v, FP, V_air, P_air]
-
