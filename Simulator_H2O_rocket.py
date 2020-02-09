@@ -4,7 +4,11 @@ Trajectory simulator of the H2O rocket for the Course on Rocket Motors.
 
 # Import the libraries.
 import numpy as np
+<<<<<<< Updated upstream
 from Integration import Time_Integration
+=======
+from Integration import Simulation
+>>>>>>> Stashed changes
 from scipy.optimize import minimize_scalar
 
 
@@ -15,8 +19,13 @@ def main(x, *args):
     # Definition of the initial state parameters.
     P_atm, P_max, T_init, D, d, alpha, delta, init_h, init_FP, init_v, m_tot = args
     state_vector = [init_h, init_FP, init_v]
+<<<<<<< Updated upstream
     Trajectory = Time_Integration(state_vector, D, d, x, P_atm, P_max, T_init,
                                   alpha, delta, m_tot)
+=======
+    Trajectory = Simulation(x, state_vector, step, alpha, delta, g, D, d,
+                            m_tot, P_amb, P_1, T_init)
+>>>>>>> Stashed changes
     return -Trajectory[0][-1]
 
 
@@ -68,7 +77,7 @@ args = (P_atm, P_max, T_init, D, d, alpha, delta, init_h_g, init_FP, init_v,
 
 # Obtain the optimized value of the initial volume.
 solution = minimize_scalar(main, args=args, method='bounded',
-                           bounds=(0, V))
+                           bounds=(1.1e-3, V))
 
 # Obtain altitude corresponding to the optimized value of the initial volume.
 Altitude = main(solution.x, P_atm, P_max, T_init, D, d, alpha, delta, init_h_g,
