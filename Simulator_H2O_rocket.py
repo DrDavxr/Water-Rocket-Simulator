@@ -25,7 +25,7 @@ def main(x, *args):
 
 # %% INTRODUCE THE INITIAL VALUES OF THE STATE PARAMETERS.
 init_v = 1  # Initial velocity [m/s].
-init_FP = np.radians(45)
+init_FP = np.radians(90)
 init_z = 665  # Initial Altitude (Leganés) w.r.t SL [m]
 R_Earth = 6371000  # Earth Radius [m]
 T_0 = 288.15  # Reference Temperature for ISA [K]

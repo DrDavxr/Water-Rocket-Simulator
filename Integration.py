@@ -33,7 +33,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
     d : FLOAT
         Nozzle throat diameter [m].
     m_tot : FLOAT
-        Structural mass of the rocket [kg].
+        Full mass of the rocket [kg].
     P_amb : FLOAT
         Ambient pressure [Pa].
     P_1 : FLOAT
@@ -101,9 +101,9 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         state_vector[2] = EOM.FP_Computation(state_vector, step)
         rho_air = WE.DensityComputation(rho_air, v_nozzle, step, d, m_air)
         state_vector[3] = m_air / rho_air
+        V_H2O = V - state_vector[3]
         state_vector[4] = WE.TankPressure(P_1, V, x, V_H2O)
 
-        V_H2O = V - state_vector[3]
         m_tot -= m_dot*step
 
         if V_H2O >= 0:
@@ -116,7 +116,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
     t_stages = np.append(t_stages, t)
 
     # %% SECOND STAGE: PROPULSIVE PHASE (AIR THRUST).
-    while P_air[-1] >= P_amb:
+    while state_vector[4] >= P_amb:
 
         # Compute the inputs.
         v_n = AE.VnozzleComp(state_vector[4], P_amb, m_air/V)
@@ -134,7 +134,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         state_vector[3] = V
         state_vector[4] = AE.TankPressComp(P_amb, A_e, v_n, V, state_vector[4],
                                            step)
-        if P_air[-1] >= P_amb:
+        if state_vector[4] >= P_amb:
             h = np.append(h, state_vector[0])
             v = np.append(v, state_vector[1])
             FP = np.append(FP, state_vector[2])

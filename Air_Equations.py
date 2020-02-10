@@ -24,9 +24,9 @@ def TankDensComp(rho_t, v_n, A_e, V, step):
     return rho_t.y[0][-1]
 
 
-def TankPressDer(t, y, P_atm, A_e, v_n, V, p, g=1.4):
+def TankPressDer(t, y, P_atm, A_e, v_n, V, p, gamma=1.4):
 
-    dpdt = 0.5*((g-1)*p - (g+1)*P_atm)*v_n*A_e/V
+    dpdt = 0.5*((gamma-1)*p - (gamma+1)*P_atm)*v_n*A_e/V
 
     return dpdt
 
