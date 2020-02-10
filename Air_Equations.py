@@ -36,7 +36,7 @@ def TankPressComp(P_atm, A_e, v_n, V, p, step):
     Compute the pressure of the air inside the tank given initial
     conditions and the time step of integration.
     """
-
+    p = float(p)
     p = solve_ivp(TankPressDer, (0, step), [p], args=(P_atm, A_e, v_n, V, p))
     return p.y[0][-1]
 

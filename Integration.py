@@ -12,6 +12,44 @@ import Air_Equations as AE
 def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
                T_init, V=2e-3):
     """
+    Simulation of the trajectory of a water rocket.
+
+    Parameters
+    ----------
+    x : FLOAT
+        Initial Volume of Water [m^3].
+    state_vector : ARRAY
+        ARRAY containing all the parameters to be integrated.
+    step : FLOAT
+        Time step of integration [s].
+    alpha : FLOAT
+        Angle of Attack [radians].
+    delta : FLOAT
+        Thrust vectoring angle [radians].
+    g : FLOAT
+        Gravity acceleration [m/s^2].
+    D : FLOAT
+        Diameter of the bottle [m].
+    d : FLOAT
+        Nozzle throat diameter [m].
+    m_tot : FLOAT
+        Structural mass of the rocket [kg].
+    P_amb : FLOAT
+        Ambient pressure [Pa].
+    P_1 : FLOAT
+        Initial pressure of the air inside the tank [Pa].
+    T_init : FLOAT
+        Initial temperature of the air inside the tank [ºC].
+    V : FLOAT, optional
+        Bottle volume [m^3]. The default is 2e-3.
+
+    Returns
+    -------
+    list
+        List containing all the necessary parameters.
+
+    """
+    """
     Structure of the state vector:
         h = state_vector[0]
         v = state_vector[1]
@@ -63,7 +101,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         state_vector[2] = EOM.FP_Computation(state_vector, step)
         rho_air = WE.DensityComputation(rho_air, v_nozzle, step, d, m_air)
         state_vector[3] = m_air / rho_air
-        state_vector[4] = WE.TankPressure(P_air[-1], V, x, V_H2O)
+        state_vector[4] = WE.TankPressure(P_1, V, x, V_H2O)
 
         V_H2O = V - state_vector[3]
         m_tot -= m_dot*step

@@ -55,7 +55,7 @@ d = 8e-3  # Nozzle throat diameter [m]
 
 # Define payload and structural mass.
 m_pl = 12e-3  # Payload mass [kg]
-m_str = 1.5*46.7e-3  # Structural mass [kg]
+m_str = 2*46.7e-3  # Structural mass [kg]
 
 m_wo_H2O = m_pl + m_str  # Initial mass of the rocket without water.
 
