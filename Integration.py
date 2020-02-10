@@ -26,6 +26,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
     FP = np.array([])
     V_air = np.array([])
     P_air = np.array([])
+    t_stages = np.array([])  # Store the instant at which each stage stops.
     t = 0
 
     # Define the initial volume of water (first guess).
@@ -74,6 +75,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
             t += step
+    t_stages = np.append(t_stages, t)
 
     # %% SECOND STAGE: PROPULSIVE PHASE (AIR THRUST).
     while P_air[-1] >= P_amb:
@@ -101,6 +103,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
             t += step
+    t_stages = np.append(t_stages, t)
 
     # %% THIRD STAGE: NO THRUST.
 
@@ -127,4 +130,5 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
             t += step
-    return [h, v, FP, V_air, P_air,t]
+    t_stages = np.append(t_stages, t)
+    return [h, v, FP, V_air, P_air, t_stages]

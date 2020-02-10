@@ -84,8 +84,11 @@ Trajectory = Simulation(solution.x, state_vector, step, alpha, delta, g, D, d,
                         solution.x * 1000 + m_wo_H2O, P_atm, P_max, T_init)
 
 print(f'Maximum Altitude: {Trajectory[0][-1]} m.\nV_H2O = {solution.x*1e3} L')
+print(f'Time elapsed during water propulsive phase: {Trajectory[-1][0]} s.')
+print(f'Time elapsed during air propulsive phase: {Trajectory[-1][1]-Trajectory[-1][0]} s.')
+print(f'Time elapsed during free flight: {Trajectory[-1][-1]-Trajectory[-1][1]} s.')
 
-t_vec = np.linspace(0, Trajectory[-1], len(Trajectory[0]))
+t_vec = np.linspace(0, Trajectory[-1][-1], len(Trajectory[0]))
 mpl = plt.figure()
 plt.plot(t_vec, Trajectory[0])
 plt.title('Altitude')
