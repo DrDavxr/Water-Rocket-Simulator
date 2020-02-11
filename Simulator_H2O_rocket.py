@@ -46,8 +46,8 @@ P_max = 2.83e5  # [Pa]
 T_init = 30     # [ºC]
 
 # Define Flight initial parameters.
-alpha = np.radians(1)
-delta = np.radians(1)
+alpha = np.radians(0)
+delta = np.radians(0)
 
 # Define Geometry Characteristics.
 D = 10.2e-2  # Bottle diameter [m]
