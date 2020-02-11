@@ -10,3 +10,10 @@ The trajectory has 3 phases:
 • Second phase, corresponding to the thrust produced by the residual air inside the tank. Computations are based on Navier-Stokes equations, together with some simplifications, like ideal air inside and outside the tank.
 
 • Third phase, corresponding to a free flight, where no thrust is applied.
+
+# Requirements.
+The required packages are:
+
+• `numpy`
+
+• `scipy v.1.4.1` or greater.
