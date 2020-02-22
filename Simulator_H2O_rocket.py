@@ -57,7 +57,7 @@ d = 8e-3  # Nozzle throat diameter [m]
 m_pl = 12e-3  # Payload mass [kg]
 m_str = 2*46.7e-3  # Structural mass [kg]
 
-m_wo_H2O = m_pl + m_str  # Initial mass of the rocket without water.
+m_wo_H2O = m_pl + m_str  # Initial mass of the rocket without water [kg].
 
 # Redefine the initial altitude w.r.t the ground.
 init_h_g = 0  # [m]
@@ -101,3 +101,29 @@ plt.title('Flight Path Angle')
 mpl = plt.figure()
 plt.plot(t_vec, Trajectory[4])
 plt.title('Pressure')
+
+# %% Contour of height as a function of structural and water mass
+
+m_str   = np.linspace(0.01,0.1,100) #Structural mass[kg]
+m_water = np.linspace(0.2,1.1,100) #Water mass [kg]
+height  = np.zeros((100,100))
+
+i = 0
+while i < len(m_str):
+    j = 0
+    while j < len(m_water):
+        state_vector = [init_h_g, init_v, init_FP, V - m_water[j]/1000, P_max]
+        
+        Trajectory = Simulation(m_water[j]/1000, state_vector, step, alpha, delta, g, D, d,
+                        m_str[i] + m_water[j], P_atm, P_max, T_init)
+        
+        height[i][j] = max(Trajectory[0])
+            
+        j += 1
+    i += 1    
+        
+        
+        
+        
+
+
