@@ -70,7 +70,7 @@ V = 2e-3
 g = 9.80655  # [m/s^2]
 
 # Define the step of integration.
-step = 0.1
+step = 0.01
 
 # %% COMPUTE THE TRAJECTORY OF THE ROCKET.
 args = (init_h_g, init_v, init_FP, V, P_max, step, alpha, delta, g,
@@ -105,24 +105,41 @@ plt.title('Pressure')
 
 # %% Contour of height as a function of structural and water mass
 
-# m_str = np.linspace(0, 0.1, 50)  # Structural mass[kg]
-# m_water = np.linspace(0, 1.1, 50)  # Water mass [kg]
+m_str = np.linspace(0.1, 0.2, 30)  # Structural mass[kg]
+m_water = np.linspace(0.1, 1.1, 30)  # Water mass [kg]
 
-# X, Y = np.meshgrid(m_water, m_str)
-# Z = np.empty((np.shape(X)[0], np.shape(X)[0]))
+X, Y = np.meshgrid(m_water, m_str)
+Z = np.empty((np.shape(X)[0], np.shape(X)[0]))
+V = np.empty((np.shape(X)[0], np.shape(X)[0]))
 
-# for i in range(np.shape(X)[0]):
-#     for j in range(np.shape(X)[0]):
-#         x = X[i][j]
-#         y = Y[i][j]
-#         state_vector = [init_h_g, init_v, init_FP, V - x/1e3, P_max]
-#         Z[i][j] = max(Simulation(x/1000, state_vector, step, alpha, delta, g, D, d,
-#                       x+y, P_atm, P_max, T_init)[0])
+for i in range(np.shape(X)[0]):
+    for j in range(np.shape(X)[0]):
+        x = X[i][j]
+        y = Y[i][j]
+        state_vector = [init_h_g, init_v, init_FP, V - x/1e3, P_max]
+        Trajectory = Simulation(x/1000, state_vector, step, alpha, delta, g, D, d,
+                      x+y, P_atm, P_max, T_init)
+        Z[i][j] = max(Trajectory[0])
+        V[i][j] = max(Trajectory[1])
+        
 
-# fig, ax = plt.subplots()
-# CS = ax.contourf(X, Y, Z, 5, cmap='jet')
-# CB = fig.colorbar(CS)
-# plt.show()
-a = max(Simulation(0.6/1000, state_vector, step, alpha, delta, g, D, d, 0.6+0.06,
-               P_atm, P_max, T_init)[0])
-print(a)
+fig, ax = plt.subplots()
+CS = ax.contourf(X, Y, Z, 7, cmap='jet')
+CB = fig.colorbar(CS)
+plt.xlabel('Water mass [kg]')
+plt.ylabel('Structural mass [kg]')
+plt.title('Height [m]')
+plt.show()
+
+
+fig, ax = plt.subplots()
+CS = ax.contourf(X, Y, Z, 7, cmap='jet')
+CB = fig.colorbar(CS)
+plt.xlabel('Water mass [kg]')
+plt.ylabel('Structural mass [kg]')
+plt.title('Max speed [m/s]')
+plt.show()
+
+#a = max(Simulation(0.6/1000, state_vector, step, alpha, delta, g, D, d, 0.6+0.06,
+#               P_atm, P_max, T_init)[0])
+#print(a)
