@@ -83,7 +83,6 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
     S_ref = np.pi*D**2/4
 
     # %% FIRST STAGE: PROPULSIVE PHASE (WATER THRUST).
-
     while V_H2O >= 0 and state_vector[4] >= P_amb:
 
         # Compute the inputs.
@@ -115,7 +114,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             t += step
     t_stages = np.append(t_stages, t)
 
-    # %% SECOND STAGE: PROPULSIVE PHASE (AIR THRUST).
+        # %% SECOND STAGE: PROPULSIVE PHASE (AIR THRUST).
     while state_vector[4] >= P_amb:
 
         # Compute the inputs.
@@ -143,7 +142,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             t += step
     t_stages = np.append(t_stages, t)
 
-    # %% THIRD STAGE: NO THRUST.
+        # %% THIRD STAGE: NO THRUST.
 
     T = 0
 

@@ -7,6 +7,7 @@ import numpy as np
 from Integration import Simulation
 from scipy.optimize import minimize_scalar
 import matplotlib.pyplot as plt
+from scipy.interpolate import griddata
 
 
 # %% SOLVE FOR THE TRAJECTORY OF THE ROCKET.
@@ -104,26 +105,24 @@ plt.title('Pressure')
 
 # %% Contour of height as a function of structural and water mass
 
-m_str   = np.linspace(0.01,0.1,100) #Structural mass[kg]
-m_water = np.linspace(0.2,1.1,100) #Water mass [kg]
-height  = np.zeros((100,100))
+# m_str = np.linspace(0, 0.1, 50)  # Structural mass[kg]
+# m_water = np.linspace(0, 1.1, 50)  # Water mass [kg]
 
-i = 0
-while i < len(m_str):
-    j = 0
-    while j < len(m_water):
-        state_vector = [init_h_g, init_v, init_FP, V - m_water[j]/1000, P_max]
-        
-        Trajectory = Simulation(m_water[j]/1000, state_vector, step, alpha, delta, g, D, d,
-                        m_str[i] + m_water[j], P_atm, P_max, T_init)
-        
-        height[i][j] = max(Trajectory[0])
-            
-        j += 1
-    i += 1    
-        
-        
-        
-        
+# X, Y = np.meshgrid(m_water, m_str)
+# Z = np.empty((np.shape(X)[0], np.shape(X)[0]))
 
+# for i in range(np.shape(X)[0]):
+#     for j in range(np.shape(X)[0]):
+#         x = X[i][j]
+#         y = Y[i][j]
+#         state_vector = [init_h_g, init_v, init_FP, V - x/1e3, P_max]
+#         Z[i][j] = max(Simulation(x/1000, state_vector, step, alpha, delta, g, D, d,
+#                       x+y, P_atm, P_max, T_init)[0])
 
+# fig, ax = plt.subplots()
+# CS = ax.contourf(X, Y, Z, 5, cmap='jet')
+# CB = fig.colorbar(CS)
+# plt.show()
+a = max(Simulation(0.6/1000, state_vector, step, alpha, delta, g, D, d, 0.6+0.06,
+               P_atm, P_max, T_init)[0])
+print(a)
