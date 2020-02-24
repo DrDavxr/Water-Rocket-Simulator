@@ -7,7 +7,6 @@ import numpy as np
 from Integration import Simulation
 from scipy.optimize import minimize_scalar
 import matplotlib.pyplot as plt
-from scipy.interpolate import griddata
 
 
 # %% SOLVE FOR THE TRAJECTORY OF THE ROCKET.
@@ -105,22 +104,22 @@ plt.title('Pressure')
 
 # %% Contour of height as a function of structural and water mass
 
-m_str = np.linspace(0.1, 0.2, 30)  # Structural mass[kg]
-m_water = np.linspace(0.1, 1.1, 30)  # Water mass [kg]
+m_str = np.linspace(0.01, 0.21, 30)  # Structural mass[kg]
+m_water = np.linspace(0.05, 1.1, 30)  # Water mass [kg]
 
 X, Y = np.meshgrid(m_water, m_str)
 Z = np.empty((np.shape(X)[0], np.shape(X)[0]))
-V = np.empty((np.shape(X)[0], np.shape(X)[0]))
+Vel = np.empty((np.shape(X)[0], np.shape(X)[0]))
 
 for i in range(np.shape(X)[0]):
     for j in range(np.shape(X)[0]):
         x = X[i][j]
         y = Y[i][j]
         state_vector = [init_h_g, init_v, init_FP, V - x/1e3, P_max]
-        Trajectory = Simulation(x/1000, state_vector, step, alpha, delta, g, D, d,
-                      x+y, P_atm, P_max, T_init)
+        Trajectory = Simulation(x/1000, state_vector, step, alpha, delta, g, D,
+                                d, x+y, P_atm, P_max, T_init)
         Z[i][j] = max(Trajectory[0])
-        V[i][j] = max(Trajectory[1])
+        Vel[i][j] = max(Trajectory[1])
         
 
 fig, ax = plt.subplots()
@@ -133,13 +132,43 @@ plt.show()
 
 
 fig, ax = plt.subplots()
-CS = ax.contourf(X, Y, Z, 7, cmap='jet')
+CS = ax.contourf(X, Y, Vel, 7, cmap='jet')
 CB = fig.colorbar(CS)
 plt.xlabel('Water mass [kg]')
 plt.ylabel('Structural mass [kg]')
 plt.title('Max speed [m/s]')
 plt.show()
 
-#a = max(Simulation(0.6/1000, state_vector, step, alpha, delta, g, D, d, 0.6+0.06,
-#               P_atm, P_max, T_init)[0])
-#print(a)
+# %% SIMULATION PLOTS FOR THE REPORT.
+"""
+It is required to plot the evolution of the altitude and velocity of the
+rocket; the evolution of the air pressure inside the rocket and the evolution
+of water mass for a dry mass of 80g (0.08kg).
+"""
+# From contour, the ideal water volume is 0.33L approximately.
+
+state_vector = [init_h_g, init_v, init_FP, V - 0.35/1e3, P_max]
+report = Simulation(0.35/1000, state_vector, step, alpha, delta, g, D, d,
+                    0.085+0.35, P_atm, P_max, T_init)
+
+t_vec = np.linspace(0, report[-2][-2], len(report[0]))
+mpl = plt.figure()
+plt.plot(t_vec, report[0])
+plt.title('Altitude evolution')
+plt.xlabel('Time [s]')
+plt.ylabel('Altitude [m]')
+mpl = plt.figure()
+plt.plot(t_vec, report[1])
+plt.title('Speed evolution')
+plt.xlabel('Time [s]')
+plt.ylabel('Speed [m/s]')
+mpl = plt.figure()
+plt.plot(t_vec, report[4])
+plt.title('Pressure evolution')
+plt.xlabel('Time [s]')
+plt.ylabel('Pressure [Pa]')
+mpl = plt.figure()
+plt.plot(t_vec, report[-1])
+plt.title('Water mass evolution')
+plt.xlabel('Time [s]')
+plt.ylabel('Water mass [kg]')

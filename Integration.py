@@ -65,6 +65,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
     V_air = np.array([])
     P_air = np.array([])
     t_stages = np.array([])  # Store the instant at which each stage stops.
+    m_water = np.array([])  # Store the water mass.
     t = 0
 
     # Define the initial volume of water (first guess).
@@ -76,6 +77,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
     FP = np.append(FP, state_vector[2])
     V_air = np.append(V_air, state_vector[3])
     P_air = np.append(P_air, state_vector[4])
+    m_water = np.append(m_water, x)
 
     rho_air = P_1 / (287*(T_init+273.15))
     m_air = V_air * rho_air
@@ -101,6 +103,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
         rho_air = WE.DensityComputation(rho_air, v_nozzle, step, d, m_air)
         state_vector[3] = m_air / rho_air
         V_H2O = V - state_vector[3]
+        print(V_H2O)
         state_vector[4] = WE.TankPressure(P_1, V, x, V_H2O)
 
         m_tot -= m_dot*step
@@ -111,6 +114,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             FP = np.append(FP, state_vector[2])
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
+            m_water = np.append(m_water, V_H2O)
             t += step
     t_stages = np.append(t_stages, t)
 
@@ -139,6 +143,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             FP = np.append(FP, state_vector[2])
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
+            m_water = np.append(m_water, 0)
             t += step
     t_stages = np.append(t_stages, t)
 
@@ -166,6 +171,7 @@ def Simulation(x, state_vector, step, alpha, delta, g, D, d, m_tot, P_amb, P_1,
             FP = np.append(FP, state_vector[2])
             V_air = np.append(V_air, state_vector[3])
             P_air = np.append(P_air, state_vector[4])
+            m_water = np.append(m_water, 0)
             t += step
     t_stages = np.append(t_stages, t)
-    return [h, v, FP, V_air, P_air, t_stages]
+    return [h, v, FP, V_air, P_air, t_stages, m_water]
